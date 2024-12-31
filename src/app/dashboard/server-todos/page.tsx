@@ -1,12 +1,18 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = false;
 
+import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { NewTodo, TodosGrid } from "@/todos";
 
 export default async function ServerTodosPage() {
 
-	const todos = await prisma.todo.findMany({ orderBy: { description: 'asc' } })
+	const session = await auth();
+
+	const todos = await prisma.todo.findMany({
+		where: { userId: session?.user?.id },
+		orderBy: { description: 'asc' }
+	})
 
 	return (
 		<>
